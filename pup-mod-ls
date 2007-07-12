@@ -15,25 +15,8 @@
 
 # Options
 # =======
-MODULE=${1:-*}
-
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 
 # Main
 # ====
-module_dir=$MODULES_PATH/$MODULE
-
-pushd . >/dev/null
-cd $module_dir
-
-	for module in $module_dir ; do
-		module_name=$(basename $module)
-		echo "Module '$module_name':"
-
-		cd $module
-	        darcs whatsnew --look-for-adds
-	        
-	        echo
-	        cd ..
-        done
-popd >/dev/null
+ls /etc/puppet/modules/ | grep -v _darcs
