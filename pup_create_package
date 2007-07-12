@@ -1,0 +1,53 @@
+#!/bin/bash
+
+#  Copyright 2007 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+
+# Options
+# =======
+# Read config file
+CONFIG_FILE=${CONFIG_FILE:-/etc/puppet/pup.conf}
+if [ -e /etc/puppet/pup.conf ] ; then
+	source /etc/puppet/pup.conf
+fi
+
+# Command line options
+if [ $# -lt 1 ] ; then
+	echo "Usage: $0 <modulename>" >&2
+	exit 1
+fi
+
+MODULE=$1
+MODULE_PACKAGE=${2:$MODULE}
+
+# Deduce default options
+MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+
+# Methods
+# =======
+function create_package() {
+
+	# Imports
+	echo 'import "package"' >> manifests/init.pp
+
+	# Package class
+        echo "class ${MODULE}_package {" >> manifests/package.pp
+        echo "    package { \"${MODULE_PACKAGE}\": ensure => installed }" >> manifests/package.pp
+        echo "}" >> manifests/package.pp
+}
+export -f create_package
+export MODULE_PACKAGE
+
+# Main
+# ====
+CREATE_HOOK=create_package pup_create_module $MODULE

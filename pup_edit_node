@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#  Copyright 2007 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+
+# Options
+# =======
+NODE=$1
+
+PUPPET_PATH=${PUPPET_PATH:-/etc/puppet}
+NODES_PATH=${NODES_PATH:-$PUPPET_PATH/manifests/nodes}
+
+# Main
+# ====
+node_path=$NODES_PATH/$NODE.pp
+
+pushd . >/dev/null
+cd $PUPPET_PATH
+	# Show what's new and record if something changed
+	darcs whatsnew $node_path && darcs record $node_path
+
+	# Open editor
+	editor $node_path
+
+	# Record changes
+	darcs record $node_path
+popd >/dev/null
