@@ -15,18 +15,15 @@
 
 # Options
 # =======
-MODULE=${1:-*}
+MODULES=${1:-$(pup-mod-ls)}
 
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 
 # Main
 # ====
-module_dir=$MODULES_PATH/$MODULE
-
 pushd . >/dev/null
-cd $module_dir
-
-	for module in $module_dir ; do
+cd $MODULES_PATH
+	for module in $MODULES ; do
 		module_name=$(basename $module)
 		echo "Module '$module_name':"
 
