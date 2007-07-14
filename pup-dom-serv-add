@@ -55,7 +55,7 @@ function add_services_to_domain() {
 			add_service $service
 		done
 
-		darcs record --all --patch-name "Added services $SERVICE"
+		darcs record --all --patch-name "Added services $SERVICES to domain '$DOMAIN'"
 	popd >/dev/null
 }
 
