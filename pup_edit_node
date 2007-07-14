@@ -34,4 +34,7 @@ cd $PUPPET_PATH
 
 	# Record changes
 	darcs record $node_path
+
+	# Push records
+	darcs push
 popd >/dev/null

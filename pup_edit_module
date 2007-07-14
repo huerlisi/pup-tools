@@ -57,4 +57,7 @@ cd $module_dir
 
 	# Record changes
 	darcs record --look-for-adds
+	
+	# Push records
+	darcs push
 popd >/dev/null
