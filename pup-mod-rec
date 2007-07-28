@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#  Copyright 2007 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+
+# Options
+# =======
+MODULES=${1:-$(pup-mod-ls)}
+
+MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+
+# Main
+# ====
+pushd . >/dev/null
+cd $MODULES_PATH
+	for module in $MODULES ; do
+		module_name=$(basename $module)
+		echo "Module '$module_name':"
+
+		cd $module
+	        darcs whatsnew --look-for-adds
+	        
+	        echo
+	        cd ..
+        done
+popd >/dev/null
