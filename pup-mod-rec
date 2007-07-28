@@ -28,7 +28,7 @@ cd $MODULES_PATH
 		echo "Module '$module_name':"
 
 		cd $module
-	        darcs whatsnew --look-for-adds
+	        darcs record --look-for-adds
 	        
 	        echo
 	        cd ..
