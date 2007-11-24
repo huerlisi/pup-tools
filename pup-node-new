@@ -1,0 +1,84 @@
+#!/bin/bash
+
+#  Copyright 2007 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+
+# Options
+# =======
+NODE=$1
+ID=$2
+DOMAINS=${3:-cyt}
+INHERITS=${4:-cyt_server}
+
+MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+NODE_FQDN=${NODE_FQDN:-$NODE.intern.zyto-labor.com}
+NODE_IP=${NODE_IP:-192.168.200.$ID}
+
+if [ $# -lt 2 ] ; then
+	echo "usage $(basename $0): <NODE> <ID> <CLIENT> <DOMAINS> <PARENT CLASS>"
+	exit 2
+fi
+
+# Operations
+# ==========
+function create_node() {
+local node_manifest=/etc/puppet/manifests/nodes/$NODE.pp
+	echo "Create node '$NODE'"
+
+	# Sign node certificate
+	if puppetca --list | grep $NODE_FQDN > /dev/null; then
+		echo "Sign certificate"
+		puppetca --sign $NODE_FQDN
+	else
+		echo "No certificate to sign"
+	fi
+
+	# Import declaration
+	echo "# Imports" > $node_manifest
+	echo "# =======" >> $node_manifest
+	echo "# System:" >> $node_manifest
+	echo 'import "network"' >> $node_manifest
+	echo 'import "apt"' >> $node_manifest
+	echo >> $node_manifest
+
+	# Domain declaration
+	echo "# Domains:" >> $node_manifest
+	for domain in $DOMAINS ; do
+		echo "import \"$domain\"" >> $node_manifest
+	done
+	if [ -n "$DOMAINS" ] ; then
+		echo >> $node_manifest
+	fi
+
+	# Class declaration
+	echo "# Node" >> $node_manifest
+	echo "# ====" >> $node_manifest
+	echo "node $NODE inherits $INHERITS {" >> $node_manifest
+	echo "	# System" >> $node_manifest
+	echo "	# ======" >> $node_manifest
+	echo "  include client_$CLIENT" >> $node_manifest
+	echo "	network_interface { \$fqdn: host_ip => '$NODE_IP' }" >> $node_manifest
+	echo "	include apt_feisty" >> $node_manifest
+	echo "	include apt_gutsy" >> $node_manifest
+	echo >> $node_manifest
+	echo "	# Services" >> $node_manifest
+	echo "	# ========" >> $node_manifest
+
+	echo "}" >> $node_manifest
+}
+
+# Main
+# ====
+create_node
+
+/etc/init.d/puppetmaster restart

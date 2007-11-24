@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#  Copyright 2007 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+
+# Options
+# =======
+MODULE=${1:-*}
+
+MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+
+# Main
+# ====
+module_dir=$MODULES_PATH/$MODULE
+
+pushd . >/dev/null
+cd $module_dir
+
+	for module in $module_dir ; do
+		module_name=$(basename $module)
+		echo "Pruning '$module_name':"
+
+		cd $module
+			shopt -s nullglob
+			rm -v *~ DEADJOE
+			shopt -u nullglob
+	        
+	        echo
+	        cd ..
+        done
+popd >/dev/null

@@ -1,0 +1,63 @@
+#!/bin/bash
+
+#  Copyright 2007 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+
+# Options
+# =======
+MODULE=$1
+
+PUPPET_PATH=${PUPPET_PATH:-/etc/puppet}
+MODULES_PATH=${MODULES_PATH:-$PUPPET_PATH/modules}
+
+module_dir=$MODULES_PATH/$MODULE
+
+# Methods
+# =======
+function show_help() {
+        echo "Usage: $0 <module_name>" >&2
+}
+
+function edit_module() {
+	manifests=$(find manifests -type f -name '*.pp')
+	templates=$(find templates -type f | grep -v '~$')
+
+	editor $manifests $templates
+}
+
+if [ -z "$MODULE" ] ; then
+	show_help
+	exit 1
+fi
+
+if [ ! -d "$module_dir" ] ; then
+	echo "Module directory '$module_dir' does not exist." >&2
+	exit 1
+fi
+
+# Main
+# ====
+pushd . >/dev/null
+cd $module_dir
+	# Show what's new and record if something changed
+	darcs whatsnew --look-for-adds && darcs record --look-for-adds
+
+	# Open editor
+	edit_module
+
+	# Record changes
+	darcs record --look-for-adds
+	
+	# Push records
+	darcs push --all
+popd >/dev/null
