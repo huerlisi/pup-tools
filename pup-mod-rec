@@ -29,7 +29,7 @@ cd $MODULES_PATH
 
 		cd $module
 	        darcs record --look-for-adds
-	        
+
 	        echo
 	        cd ..
         done

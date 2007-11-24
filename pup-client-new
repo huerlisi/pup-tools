@@ -23,7 +23,7 @@ MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 manifest=/etc/puppet/modules/$CLIENT/manifests/init.pp
 
 if [ $# -lt 1 ] ; then
-	echo "usage $(basename $0): <CLIENT> [<DOMAIN>]"
+	echo "Usage: $(basename $0) <CLIENT> [<DOMAIN>]"
 	exit 2
 fi
 
@@ -51,7 +51,7 @@ function create_client() {
 		echo >> $manifest
 		echo "	client_accounts { \"$DOMAIN\": name => \"$DOMAIN\" }" >> $manifest
 		echo '}' >> $manifest
-                                                        		
+
 		for service in $SERVICES ; do
 			add_service $service
 		done

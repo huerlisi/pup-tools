@@ -15,11 +15,13 @@
 
 # Options
 # =======
+MODULE=$1
+
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 MODULES_REPOSITORY=${MODULES_REPOSITORY:-sysadmin:/etc/puppet/modules}
 
 if [ $# -lt 1 ] ; then
-	echo "usage $(basename $0): <MODULE>"
+	echo "Usage: $(basename $0) <MODULE>"
 	exit 2
 fi
 
@@ -29,11 +31,11 @@ function put_module() {
 local module=$1
 
 	cd $MODULES_PATH/$module
-	darcs put $MODULES_REPOSITORY/$module
+	darcs put --all $MODULES_REPOSITORY/$module
 }
 
 # Main
 # ====
 pushd . >/dev/null
-	put_module $1
+	put_module $MODULE
 popd >/dev/null

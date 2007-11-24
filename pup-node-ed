@@ -20,6 +20,11 @@ NODE="${1%.pp}"
 PUPPET_PATH=${PUPPET_PATH:-/etc/puppet}
 NODES_PATH=${NODES_PATH:-$PUPPET_PATH/manifests/nodes}
 
+if [ $# -lt 1 ] ; then
+	echo "Usage: $(basename $0) <NODE>"
+	exit 2
+fi
+
 # Main
 # ====
 node_path=$NODES_PATH/$NODE.pp

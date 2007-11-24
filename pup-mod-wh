@@ -16,6 +16,8 @@
 # Options
 # =======
 MODULES=${1:-$(pup-mod-ls)}
+
+# Show only summary no module is given
 if [ -n "$1" ]; then
 	opt_sum="--no-sum"
 fi
@@ -32,7 +34,7 @@ cd $MODULES_PATH
 
 		cd $module
 	        darcs whatsnew --look-for-adds $opt_sum
-	        
+
 	        echo
 	        cd ..
         done
