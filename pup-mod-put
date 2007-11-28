@@ -31,7 +31,7 @@ function put_module() {
 local module=$1
 
 	cd $MODULES_PATH/$module
-	darcs put --all $MODULES_REPOSITORY/$module
+	darcs put $MODULES_REPOSITORY/$module
 }
 
 # Main
