@@ -62,7 +62,11 @@ function create_domain() {
 			add_service $service
 		done
 
-		darcs record --all --patch-name "Added services $SERVICE"
+		if [ -n "$SERVICES" ] ; then
+			service_log=" $SERVICES"
+		fi
+		
+		darcs record --all --patch-name "Created domain '$DOMAIN'$service_log"
 	popd >/dev/null
 }
 
