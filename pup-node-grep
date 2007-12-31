@@ -15,15 +15,15 @@
 
 # Options
 # =======
-MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+NODES_PATH=${MODULES_PATH:-/etc/puppet/manifests/nodes}
 REGEXP="$1"
 MODULE=${2:-$(pup-mod-ls)}
 
 if [ $# -lt 1 ] ; then
-	echo "Usage: $(basename $0) <REGEXP> [<MODULE>]"
+	echo "Usage: $(basename $0) <REGEXP> [<NODE>]"
 	exit 2
 fi
 
 # Main
 # ====
-grep --recursive $REGEXP $MODULES_PATH | grep -v _darcs | grep -v '~:'
+grep --recursive $REGEXP $NODES_PATH | grep -v _darcs | grep -v '~:'
