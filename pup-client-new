@@ -63,4 +63,4 @@ function create_client() {
 # Main
 # ====
 create_client
-pup-mod-push $CLIENT
+pup-mod-push --all $CLIENT
