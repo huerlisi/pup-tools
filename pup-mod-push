@@ -18,9 +18,14 @@
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 
 if [ $# -lt 1 ] ; then
-	echo "Usage: $(basename $0) <MODULE>"
+	echo "Usage: $(basename $0) [--all] <MODULE>"
 	exit 2
 fi
+
+if [ "$1" == "--all" ] ; then
+	options="--all"
+	shift
+then
 
 # Operations
 # ==========
@@ -28,7 +33,7 @@ function push_module() {
 local module=$1
 
 	cd $MODULES_PATH/$module
-	darcs push
+	darcs push $options
 }
 
 # Main
