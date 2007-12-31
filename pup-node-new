@@ -17,7 +17,7 @@
 # =======
 NODE=$1
 ID=$2
-DOMAINS=${3:-cyt}
+CLIENT=${3:-cyt}
 INHERITS=${4:-cyt_server}
 
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
@@ -25,7 +25,7 @@ NODE_FQDN=${NODE_FQDN:-$NODE.intern.zyto-labor.com}
 NODE_IP=${NODE_IP:-192.168.200.$ID}
 
 if [ $# -lt 2 ] ; then
-	echo "usage $(basename $0): <NODE> <ID> <CLIENT> <DOMAINS> <PARENT CLASS>"
+	echo "usage $(basename $0): <NODE> <ID> <CLIENT> <PARENT CLASS>"
 	exit 2
 fi
 
@@ -66,7 +66,7 @@ local node_manifest=/etc/puppet/manifests/nodes/$NODE.pp
 	echo "node $NODE inherits $INHERITS {" >> $node_manifest
 	echo "	# System" >> $node_manifest
 	echo "	# ======" >> $node_manifest
-	echo "  include client_$CLIENT" >> $node_manifest
+	echo "	include client_$CLIENT" >> $node_manifest
 	echo "	network_interface { \$fqdn: host_ip => '$NODE_IP' }" >> $node_manifest
 	echo "	include apt_feisty" >> $node_manifest
 	echo "	include apt_gutsy" >> $node_manifest
