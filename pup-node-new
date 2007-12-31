@@ -23,6 +23,9 @@ INHERITS=${4:-cyt_server}
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 NODE_FQDN=${NODE_FQDN:-$NODE.intern.zyto-labor.com}
 NODE_IP=${NODE_IP:-192.168.200.$ID}
+NODE_PATH=${NODE_PATH:-/etc/puppet/manifests/nodes}
+
+node_manifest=$NODE_PATH/$NODE.pp
 
 if [ $# -lt 2 ] ; then
 	echo "usage $(basename $0): <NODE> <ID> <CLIENT> <PARENT CLASS>"
@@ -31,10 +34,7 @@ fi
 
 # Operations
 # ==========
-function create_node() {
-local node_manifest=/etc/puppet/manifests/nodes/$NODE.pp
-	echo "Create node '$NODE'"
-
+function sign_node() {
 	# Sign node certificate
 	if puppetca --list | grep $NODE_FQDN > /dev/null; then
 		echo "Sign certificate"
@@ -42,6 +42,10 @@ local node_manifest=/etc/puppet/manifests/nodes/$NODE.pp
 	else
 		echo "No certificate to sign"
 	fi
+}
+
+function create_node() {
+	echo "Create node '$NODE'"
 
 	# Import declaration
 	echo "# Imports" > $node_manifest
@@ -80,5 +84,8 @@ local node_manifest=/etc/puppet/manifests/nodes/$NODE.pp
 # Main
 # ====
 create_node
+darcs add $node_manifest
 
-/etc/init.d/puppetmaster restart
+sudo /etc/init.d/puppetmaster restart
+
+sign_node
