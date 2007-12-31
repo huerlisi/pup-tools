@@ -52,14 +52,14 @@ local node_manifest=/etc/puppet/manifests/nodes/$NODE.pp
 	echo >> $node_manifest
 
 	# Domain declaration
-	echo "# Domains:" >> $node_manifest
-	for domain in $DOMAINS ; do
-		echo "import \"$domain\"" >> $node_manifest
-	done
-	if [ -n "$DOMAINS" ] ; then
-		echo >> $node_manifest
-	fi
+	echo "# Client:" >> $node_manifest
+	echo "import \"$CLIENT\"" >> $node_manifest
+	echo >> $node_manifest
 
+	# Service declaration
+	echo "#Services:" >> $node_manifest
+	echo >> $node_manifest
+	
 	# Class declaration
 	echo "# Node" >> $node_manifest
 	echo "# ====" >> $node_manifest
