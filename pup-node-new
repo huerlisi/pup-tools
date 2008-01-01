@@ -84,9 +84,12 @@ function create_node() {
 # Main
 # ====
 create_node
-darcs add $node_manifest
-darcs rec --message "New node '$NODE'" $node_manifest
-darcs push --all
+pushd . >/dev/null
+	cd $NODE_PATH
+	darcs add $NODE.pp
+	darcs rec --patch-name "New node '$NODE'" $NODE.pp
+	darcs push --all
+popd >/dev/null
 
 sudo /etc/init.d/puppetmaster restart
 
