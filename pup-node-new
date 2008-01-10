@@ -87,7 +87,7 @@ create_node
 pushd . >/dev/null
 	cd $NODE_PATH
 	darcs add $NODE.pp
-	darcs rec --patch-name "New node '$NODE'" $NODE.pp
+	darcs rec --all --patch-name "New node '$NODE'" $NODE.pp
 	darcs push --all
 popd >/dev/null
 
