@@ -32,13 +32,13 @@ node_path=$NODES_PATH/$NODE.pp
 pushd . >/dev/null
 cd $NODES_PATH
 	# Show what's new and record if something changed
-	darcs record $node_path
+	darcs record $NODE.pp
 
 	# Open editor
 	editor $node_path
 
 	# Record changes
-	darcs record $node_path
+	darcs record $NODE.pp
 
 	# Push records
 	darcs push --all
