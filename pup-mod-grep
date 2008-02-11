@@ -26,4 +26,4 @@ fi
 
 # Main
 # ====
-grep --recursive $REGEXP $MODULES_PATH | grep -v _darcs | grep -v '~:'
+grep --recursive "$REGEXP" $MODULES_PATH | grep -v _darcs | grep -v '~:'
