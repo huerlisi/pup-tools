@@ -36,9 +36,9 @@ fi
 # ==========
 function sign_node() {
 	# Sign node certificate
-	if puppetca --list | grep $NODE_FQDN > /dev/null; then
+	if sudo puppetca --list | grep $NODE_FQDN > /dev/null; then
 		echo "Sign certificate"
-		puppetca --sign $NODE_FQDN
+		sudo puppetca --sign $NODE_FQDN
 	else
 		echo "No certificate to sign"
 	fi
