@@ -73,6 +73,7 @@ function create_node() {
 	echo "	include client_$CLIENT" >> $node_manifest
 	echo "	network_interface { \$fqdn: host_ip => '$NODE_IP' }" >> $node_manifest
 	echo "	include cyt_nfs_home" >> $node_manifest
+	echo "	include xen_guest" >> $node_manifest
 	echo "	include apt_gutsy" >> $node_manifest
 	echo >> $node_manifest
 	echo "	# Services" >> $node_manifest
