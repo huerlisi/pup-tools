@@ -61,7 +61,7 @@ function create_node() {
 	echo >> $node_manifest
 
 	# Service declaration
-	echo "#Services:" >> $node_manifest
+	echo "# Services:" >> $node_manifest
 	echo >> $node_manifest
 	
 	# Class declaration
