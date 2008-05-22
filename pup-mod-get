@@ -1,0 +1,42 @@
+#!/bin/bash
+
+#  Copyright 2007 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+set -e
+
+# Options
+# =======
+MODULE=$1
+
+MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+MODULES_REPOSITORY=${MODULES_REPOSITORY:-sysadmin:/etc/puppet/modules}
+
+if [ $# -lt 1 ] ; then
+	echo "Usage: $(basename $0) <MODULE>"
+	exit 2
+fi
+
+# Operations
+# ==========
+function get_module() {
+local module=$1
+
+	cd $MODULES_PATH/$module
+	darcs get $MODULES_REPOSITORY/$module
+}
+
+# Main
+# ====
+pushd . >/dev/null
+	get_module $MODULE
+popd >/dev/null
