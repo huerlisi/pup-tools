@@ -34,7 +34,7 @@ fi
 function get_module() {
 local module=$1
 
-	cd $MODULES_PATH/$module
+	cd $MODULES_PATH
 	darcs get $MODULES_REPOSITORY/$module
 }
 
