@@ -1,0 +1,42 @@
+#!/bin/bash
+
+#  Copyright 2007-2008 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+
+# Options
+# =======
+MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+PUP_CONF=/etc/puppet-tools/puppet-tools.conf
+MODULES_REPOSITORY=${1:-sysadmin:/etc/puppet/modules}
+
+if [ "$1" == "--help" ] ; then
+	echo "Usage: $(basename $0) [MODULES_REPOSITORY]"
+	exit 2
+fi
+
+# Operations
+# ==========
+function init() {
+
+	mkdir -p /etc/puppet-tools
+	echo "MODULES_REPOSITORY=$MODULES_REPOSITORY" > $PUP_CONF
+
+	mkdir -p $MODULES_PATH
+	touch /etc/puppet/manifests/site.pp
+}
+
+# Main
+# ====
+pushd . >/dev/null
+	init
+popd >/dev/null
