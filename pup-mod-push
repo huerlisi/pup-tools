@@ -17,6 +17,10 @@
 # =======
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 
+# Config File
+PUP_CONF=${PUP_CONF:-/etc/puppet-tools/puppet-tools.conf}
+source $PUP_CONF
+
 if [ $# -lt 1 ] ; then
 	echo "Usage: $(basename $0) [--all] <MODULE>"
 	exit 2
