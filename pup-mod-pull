@@ -15,33 +15,26 @@
 
 # Options
 # =======
-MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+MODULES=${1:-$(pup-mod-ls)}
 
-# Config File
-PUP_CONF=${PUP_CONF:-/etc/puppet-tools/puppet-tools.conf}
-source $PUP_CONF
-
-if [ $# -lt 1 ] ; then
-	echo "Usage: $(basename $0) [--all] <MODULE>"
-	exit 2
-fi
-
-if [ "$1" == "--all" ] ; then
+if [ "$1" == "--all" ]; then
 	options="--all"
 	shift
 fi
 
-# Operations
-# ==========
-function push_module() {
-local module=$1
-
-	cd $MODULES_PATH/$module
-	darcs push $options
-}
+MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 
 # Main
 # ====
 pushd . >/dev/null
-	push_module $1
+cd $MODULES_PATH
+	for module in $MODULES ; do
+		module_name=$(basename $module)
+		echo "Module '$module_name':"
+
+		pushd . >/dev/null
+		cd $module
+		        darcs pull $options
+	        popd >/dev/null
+        done
 popd >/dev/null
