@@ -13,26 +13,47 @@
 #  GNU General Public License for more details.
 
 
-# Options
-# =======
-MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
-PUP_CONF=/etc/puppet-tools/puppet-tools.conf
-MODULES_REPOSITORY=${1:-sysadmin:/etc/puppet/modules}
+# Commandline Handling
+if [ "$1" == "--force" ] ; then
+	FORCE="true"
+	shift
+fi
 
 if [ "$1" == "--help" ] ; then
-	echo "Usage: $(basename $0) [MODULES_REPOSITORY]"
+	echo "Usage: $(basename $0) [--force] [REPOSITORY_ROOT]"
 	exit 2
 fi
+
+REPOSITORY_ROOT=${1:-sysadmin:/etc/puppet}
+
+# Options
+# =======
+PUP_CONF=${PUP_CONF:-/etc/puppet-tools/puppet-tools.conf}
+
+# Defaults
+MODULES_REPOSITORY="$REPOSITORY_ROOT/modules"
+NODE_REPOSITORY="$REPOSITORY_ROOT/manifests/nodes"
+
+MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+NODE_PATH=${NODE_PATH:-/etc/puppet/manifests/nodes}
 
 # Operations
 # ==========
 function init() {
 
-	mkdir -p /etc/puppet-tools
-	echo "MODULES_REPOSITORY=$MODULES_REPOSITORY" > $PUP_CONF
+	mkdir -p "$(dirname $PUP_CONF)"
+	if [ "$FORCE" == "true" -o ! -e "$PUP_CONF" ] ; then
+		echo "MODULES_REPOSITORY=$MODULES_REPOSITORY" > $PUP_CONF
+		echo "MODULES_PATH=$MODULES_PATH" >> $PUP_CONF
+		echo "NODE_REPOSITORY=$NODE_REPOSITORY" >> $PUP_CONF
+		echo "NODE_PATH=$NODE_PATH" >> $PUP_CONF
+	fi
 
 	mkdir -p $MODULES_PATH
 	touch /etc/puppet/manifests/site.pp
+
+	mkdir -p $NODE_PATH
+	darcs init --repodir $NODE_PATH
 }
 
 # Main
