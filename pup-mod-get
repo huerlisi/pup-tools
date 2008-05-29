@@ -35,13 +35,13 @@ function get_module() {
 local module_uri=$1
 
 	cd $MODULES_PATH
-	darcs get $MODULES_REPOSITORY/$module
+	darcs get $module_uri
 }
 
 # Main
 # ====
-module_uri="$MODULES_REPOSITORY/$module"
-module_path="$MODULES_PATH/$module"
+module_uri="$MODULES_REPOSITORY/$MODULE"
+module_path="$MODULES_PATH/$MODULE"
 
 if [ -d "$module_path" ] ; then
 	echo "[ERROR] module '$MODULE' already at '$module_path', exiting." >&2
@@ -49,5 +49,5 @@ if [ -d "$module_path" ] ; then
 fi
 
 pushd . >/dev/null
-	get_module $MODULE
+	get_module $module_uri
 popd >/dev/null
