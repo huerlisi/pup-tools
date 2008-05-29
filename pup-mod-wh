@@ -32,10 +32,11 @@ cd $MODULES_PATH
 		module_name=$(basename $module)
 		echo "Module '$module_name':"
 
+		pushd . >/dev/null
 		cd $module
-	        darcs whatsnew --look-for-adds $opt_sum
+		        darcs whatsnew --look-for-adds $opt_sum
 
-	        echo
-	        cd ..
+		        echo
+	        popd >/dev/null
         done
 popd >/dev/null
