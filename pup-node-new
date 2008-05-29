@@ -16,19 +16,18 @@
 # Options
 # =======
 NODE=$1
-ID=$2
+NODE_IP=$2
 CLIENT=${3:-cyt}
 INHERITS=${4:-cyt_server}
 
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
-NODE_FQDN=${NODE_FQDN:-$NODE.intern.zyto-labor.com}
-NODE_IP=${NODE_IP:-192.168.200.$ID}
+NODE_FQDN=${NODE_FQDN:-$NODE.$(hostname --domain)}
 NODE_PATH=${NODE_PATH:-/etc/puppet/manifests/nodes}
 
 node_manifest=$NODE_PATH/$NODE.pp
 
 if [ $# -lt 2 ] ; then
-	echo "usage $(basename $0): <NODE> <ID> <CLIENT> <PARENT CLASS>"
+	echo "usage $(basename $0): <NODE> <IP> [<CLIENT> <PARENT CLASS>]"
 	exit 2
 fi
 
