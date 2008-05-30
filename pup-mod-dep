@@ -15,31 +15,47 @@
 
 # Options
 # =======
-MODULES=${1:-$(pup-mod-ls)}
-
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 
 function list_imports() {
 local module=$1
 
-	TEMP_DIR=$(mktemp -d)
-	find manifests/ -name '*.pp' | sed 's#^manifests/\(.*\)\.pp#\1#p' | sort -u >$TEMP_DIR/locals
-	find manifests/ -name '*.pp' -exec egrep '[[:space:]]*import' {} \; | sed -n 's/import "\(.*\)"/\1/p' | egrep -v "^$module/" | sort -u >$TEMP_DIR/imports
+	pushd . >/dev/null
+		cd $MODULES_PATH/$module
 
-	comm -2 -3 $TEMP_DIR/imports $TEMP_DIR/locals
+		TEMP_DIR=$(mktemp -d)
+
+		find manifests/ -name '*.pp' | sed 's#^manifests/\(.*\)\.pp#\1#p' | sort -u >$TEMP_DIR/locals
+		find manifests/ -name '*.pp' -exec egrep '[[:space:]]*import' {} \; | sed -n 's/import "\(.*\)"/\1/p' | egrep -v "^$module/" | sort -u >$TEMP_DIR/imports
+
+		comm -2 -3 $TEMP_DIR/imports $TEMP_DIR/locals
+
+		rm -rf $TEMP_DIR
+	popd >/dev/null
+}
+
+function list_all_imports() {
+	for module in $(pup-mod-ls) ; do
+	        list_imports $module
+        done | sort -u
+}
+
+function list_missing_imports() {
+	TEMP_DIR=$(mktemp -d)
+
+	pup-mod-dep | sort -u >$TEMP_DIR/imports
+	pup-mod-ls | sort -u >$TEMP_DIR/modules
+	
+	comm -2 -3 $TEMP_DIR/imports $TEMP_DIR/modules
 
 	rm -rf $TEMP_DIR
 }
 
 # Main
 # ====
-pushd . >/dev/null
-cd $MODULES_PATH
-	for module in $MODULES ; do
-		module_name=$(basename $module)
-		pushd . >/dev/null
-		cd $module
-		        list_imports $module
-	        popd >/dev/null
-        done
-popd >/dev/null
+action=list_all_imports
+
+[ "$1" == "missing" ] && action=list_missing_imports
+[ "$1" == "show" ] && action=list_imports
+
+$action
