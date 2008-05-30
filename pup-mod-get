@@ -16,38 +16,45 @@ set -e
 
 # Options
 # =======
-MODULE=$1
-
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 
 # Config File
 PUP_CONF=${PUP_CONF:-/etc/puppet-tools/puppet-tools.conf}
 source $PUP_CONF
 
-if [ $# -lt 1 ] ; then
-	echo "Usage: $(basename $0) <MODULE>"
+if [ $# -lt 1 -o "$1" == "help" ] ; then
+	echo "Usage: $(basename $0) [--missing] [<MODULE>...]"
 	exit 2
 fi
 
 # Operations
 # ==========
 function get_module() {
-local module_uri=$1
+local module=$1
 
+	local module_path="$MODULES_PATH/$module"
+	local module_uri="$MODULES_REPOSITORY/$module"
+
+	if [ -d "$module_path" ] ; then
+		echo "[ERROR] module '$module' already at '$module_path', exiting." >&2
+		return
+	fi
+	
+	pushd . >/dev/null
 	cd $MODULES_PATH
-	darcs get $module_uri
+		darcs get $module_uri
+	popd >/dev/null
 }
 
 # Main
 # ====
-module_uri="$MODULES_REPOSITORY/$MODULE"
-module_path="$MODULES_PATH/$MODULE"
 
-if [ -d "$module_path" ] ; then
-	echo "[ERROR] module '$MODULE' already at '$module_path', exiting." >&2
-	exit 1
+if [ "$1" == "--missing" ] ; then
+	shift
+	modules=$(pup-mod-dep missing)
 fi
 
-pushd . >/dev/null
-	get_module $module_uri
-popd >/dev/null
+modules="$modules $@"
+for module in $modules ; do
+	get_module $module
+done
