@@ -61,6 +61,7 @@ function create_node() {
 
 	# Service declaration
 	echo "# Services:" >> $node_manifest
+	echo 'import "xen"' >> $node_manifest
 	echo >> $node_manifest
 	
 	# Class declaration
