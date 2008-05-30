@@ -50,7 +50,7 @@ function init() {
 	fi
 
 	mkdir -p $MODULES_PATH
-	touch /etc/puppet/manifests/site.pp
+	echo "nodes/*.pp" >> /etc/puppet/manifests/site.pp
 
 	mkdir -p $NODE_PATH
 	darcs init --repodir $NODE_PATH
