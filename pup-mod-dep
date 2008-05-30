@@ -1,0 +1,45 @@
+#!/bin/bash
+
+#  Copyright 2007-2008 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+
+# Options
+# =======
+MODULES=${1:-$(pup-mod-ls)}
+
+MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+
+function list_imports() {
+local module=$1
+
+	TEMP_DIR=$(mktemp -d)
+	find manifests/ -name '*.pp' | sed 's#^manifests/\(.*\)\.pp#\1#p' | sort -u >$TEMP_DIR/locals
+	find manifests/ -name '*.pp' -exec egrep '[[:space:]]*import' {} \; | sed -n 's/import "\(.*\)"/\1/p' | egrep -v "^$module/" | sort -u >$TEMP_DIR/imports
+
+	comm -2 -3 $TEMP_DIR/imports $TEMP_DIR/locals
+
+	rm -rf $TEMP_DIR
+}
+
+# Main
+# ====
+pushd . >/dev/null
+cd $MODULES_PATH
+	for module in $MODULES ; do
+		module_name=$(basename $module)
+		pushd . >/dev/null
+		cd $module
+		        list_imports $module
+	        popd >/dev/null
+        done
+popd >/dev/null
