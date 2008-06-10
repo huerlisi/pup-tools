@@ -30,8 +30,8 @@ function show_help() {
 }
 
 function edit_module() {
-	manifests=$(find manifests -type f -name '*.pp')
-	templates=$(find templates -type f | grep -v '~$')
+	manifests=$(find manifests -type f -name '*.pp') || true
+	templates=$(find templates -type f | grep -v '~$') || true
 
 	editor $manifests $templates
 }

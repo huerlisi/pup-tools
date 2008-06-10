@@ -90,7 +90,7 @@ pushd . >/dev/null
 	cd $NODE_PATH
 	darcs add $NODE.pp
 	darcs rec --all --patch-name "New node '$NODE'" $NODE.pp
-	darcs push --all
+	darcs push --all || echo "[WARN]: Can't push upstream. This will be the only copy."
 popd >/dev/null
 
 sudo /etc/init.d/puppetmaster restart
