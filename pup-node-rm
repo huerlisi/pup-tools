@@ -1,0 +1,46 @@
+#!/bin/bash
+
+#  Copyright 2008 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+set -e
+
+# Options
+# =======
+NODE="${1%.pp}"
+
+PUPPET_PATH=${PUPPET_PATH:-/etc/puppet}
+NODES_PATH=${NODES_PATH:-$PUPPET_PATH/manifests/nodes}
+
+if [ $# -lt 1 ] ; then
+	echo "Usage: $(basename $0) <NODE>"
+	exit 2
+fi
+
+# Main
+# ====
+node_path=$NODES_PATH/$NODE.pp
+
+pushd . >/dev/null
+cd $NODES_PATH
+	# Show what's new and record if something changed
+	darcs record $NODE.pp
+
+	# Open editor
+	rm $NODE.pp
+	
+	# Record changes
+	darcs record $NODE.pp --patch-name "Remove node declaration '$NODE'"
+
+	# Push records
+	darcs push --all
+popd >/dev/null
