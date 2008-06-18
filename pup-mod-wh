@@ -35,7 +35,7 @@ cd $MODULES_PATH
 
 		pushd . >/dev/null
 		cd $module
-		        darcs whatsnew --look-for-adds $opt_sum
+		        darcs whatsnew --look-for-adds $opt_sum || true
 
 		        echo
 	        popd >/dev/null
