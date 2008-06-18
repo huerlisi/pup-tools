@@ -33,7 +33,7 @@ cd $module_dir
 
 		cd $module
 			shopt -s nullglob
-			rm -v *~ DEADJOE
+			rm -fv *~ DEADJOE
 			shopt -u nullglob
 
 	        echo
