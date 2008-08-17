@@ -31,7 +31,7 @@ REPOSITORY_ROOT=${1:-sysadmin:/etc/puppet}
 PUP_CONF=${PUP_CONF:-/etc/puppet-tools/puppet-tools.conf}
 
 # Defaults
-MODULES_REPOSITORY="$REPOSITORY_ROOT/modules"
+MODULES_REPOSITORY="$REPOSITORY_ROOT"
 NODE_REPOSITORY="$REPOSITORY_ROOT/manifests/nodes"
 
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
