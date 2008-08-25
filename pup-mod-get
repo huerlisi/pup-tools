@@ -52,6 +52,11 @@ local module=$1
 if [ "$1" == "--missing" ] ; then
 	shift
 	modules=$(pup-mod-dep missing)
+	if [ -n "$modules" ] ; then
+		echo "Getting missing modules $modules"
+	else
+		echo "No missing modules"
+	fi
 fi
 
 modules="$modules $@"
