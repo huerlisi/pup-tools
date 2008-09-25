@@ -25,6 +25,10 @@ MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 NODE_FQDN=${NODE_FQDN:-$NODE.$(hostname --domain)}
 NODE_PATH=${NODE_PATH:-/etc/puppet/manifests/nodes}
 
+NODE_GATEWAY=${NODE_GATEWAY:-$(cut -d '.' -f 1-3 <<<"$NODE_IP").1}
+NODE_DNS_NAMESERVERS=${NODE_DNS_NAMESERVER:-$NODE_GATEWAY}
+NODE_DNS_SEARCH=${NODE_DNS_SEARCH:-$(hostname -d)}
+
 node_manifest=$NODE_PATH/$NODE.pp
 
 if [ $# -lt 2 ] ; then
@@ -72,7 +76,12 @@ function create_node() {
 	echo "	# System" >> $node_manifest
 	echo "	# ======" >> $node_manifest
 	echo "	include client_$CLIENT" >> $node_manifest
-	echo "	network_interface { \$fqdn: host_ip => '$NODE_IP' }" >> $node_manifest
+	echo "	network_interface { \$fqdn:" >> $node_manifest
+	echo "		address         => '$NODE_IP'," >> $node_manifest
+	echo "		gateway         => '$NODE_GATEWAY'," >> $node_manifest
+	echo "		dns_nameservers => '$NODE_DNS_NAMESERVERS'," >> $node_manifest
+	echo "		dns_search      => '$NODE_DNS_SEARCH'" >> $node_manifest
+	echo "	}" >> $node_manifest
 	echo "	include cyt_nfs_home" >> $node_manifest
 	echo "	include xen_guest" >> $node_manifest
 	echo "	include apt" >> $node_manifest
