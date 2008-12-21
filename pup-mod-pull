@@ -31,22 +31,32 @@ source $PUP_CONF
 
 # Main
 # ====
+function pull_module() {
+local module=$1
+
 pushd . >/dev/null
-cd $MODULES_PATH
+cd $MODULES_PATH/$module
+
+        if [ -e _darcs/prefs/defaultrepo ] ; then
+                darcs pull $options || err=$?
+        else
+                read -p "Do you want to put it to '$MODULES_REPOSITORY' [Yn]?: " answer
+                if ! [ "${answer:0:1}" == 'N' -o "${answer:0:1}" == 'n' ] ; then
+                        pup-mod-push $module $MODULES_REPOSITORY
+                fi
+        fi
+
+popd >/dev/null
+}
+
+function pull_all() {
 	for module in $MODULES ; do
 		module_name=$(basename $module)
 		echo "Module '$module_name':"
-
-		pushd . >/dev/null
-		cd $module
-			if [ -e _darcs/prefs/defaultrepo ] ; then
-			        darcs pull $options || err=$?
-			else
-		        	read -p "Do you want to put it to '$MODULES_REPOSITORY' [Yn]?: " answer
-		        	if ! [ "${answer:0:1}" == 'N' -o "${answer:0:1}" == 'n' ] ; then
-		        		pup-mod-push $module $MODULES_REPOSITORY
-		        	fi
-		        fi
-	        popd >/dev/null
+		pull_module $module
         done
-popd >/dev/null
+}
+
+# Main
+# ====
+pull_all

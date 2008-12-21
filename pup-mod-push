@@ -16,16 +16,13 @@ set -e
 
 # Options
 # =======
+MODULES=${1:-$(pup-mod-ls)}
+
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 
 # Config File
 PUP_CONF=${PUP_CONF:-/etc/puppet-tools/puppet-tools.conf}
 source $PUP_CONF
-
-if [ $# -lt 1 ] ; then
-	echo "Usage: $(basename $0) [--all] <MODULE>"
-	exit 2
-fi
 
 if [ "$1" == "--all" ] ; then
 	options="--all"
@@ -37,7 +34,9 @@ fi
 function push_module() {
 local module=$1
 
-	cd $MODULES_PATH/$module
+pushd . >/dev/null
+cd $MODULES_PATH/$module
+
 	darcs push $options || err=$?
 	if [ "$err" == 2 ] ; then # probably no repository
 		read -p "Do you want to put the '$module' to '$MODULES_REPOSITORY' [Yn]?: " answer
@@ -45,10 +44,18 @@ local module=$1
 			pup-mod-put $module $MODULES_REPOSITORY
 		fi
 	fi
+
+popd >/dev/null
+}
+
+function push_all() {
+	for module in $MODULES ; do
+		module_name=$(basename $module)
+		echo "Module '$module_name':"
+		push_module $module
+        done
 }
 
 # Main
 # ====
-pushd . >/dev/null
-	push_module $1 $2
-popd >/dev/null
+push_all
