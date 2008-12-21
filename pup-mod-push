@@ -38,11 +38,17 @@ function push_module() {
 local module=$1
 
 	cd $MODULES_PATH/$module
-	darcs push $options
+	darcs push $options || err=$?
+	if [ "$err" == 2 ] ; then # probably no repository
+		read -p "Do you want to put the '$module' to '$MODULES_REPOSITORY' [Yn]?: " answer
+		if ! [ "${answer:0:1}" == 'N' -o "${answer:0:1}" == 'n' ] ; then
+			pup-mod-put $module $MODULES_REPOSITORY
+		fi
+	fi
 }
 
 # Main
 # ====
 pushd . >/dev/null
-	push_module $1
+	push_module $1 $2
 popd >/dev/null

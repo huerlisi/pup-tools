@@ -25,6 +25,10 @@ fi
 
 MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 
+# Config File
+PUP_CONF=${PUP_CONF:-/etc/puppet-tools/puppet-tools.conf}
+source $PUP_CONF
+
 # Main
 # ====
 pushd . >/dev/null
@@ -35,7 +39,14 @@ cd $MODULES_PATH
 
 		pushd . >/dev/null
 		cd $module
-		        darcs pull $options
+			if [ -e _darcs/prefs/defaultrepo ] ; then
+			        darcs pull $options || err=$?
+			else
+		        	read -p "Do you want to put it to '$MODULES_REPOSITORY' [Yn]?: " answer
+		        	if ! [ "${answer:0:1}" == 'N' -o "${answer:0:1}" == 'n' ] ; then
+		        		pup-mod-push $module $MODULES_REPOSITORY
+		        	fi
+		        fi
 	        popd >/dev/null
         done
 popd >/dev/null
