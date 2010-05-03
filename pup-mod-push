@@ -24,9 +24,9 @@ MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
 PUP_CONF=${PUP_CONF:-/etc/puppet-tools/puppet-tools.conf}
 source $PUP_CONF
 
-if [ "$1" == "--all" ] ; then
-	options="--all"
-	shift
+if [ $# -lt 1 ] ; then
+	echo "usage $(basename $0): <MODULE>"
+	exit 2
 fi
 
 # Operations

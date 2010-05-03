@@ -12,27 +12,26 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 
-set -e
-=======
 
 # Options
 # =======
-MODULES=${1:-$(pup-mod-ls)}
+USER=$1
 
-MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+PUPPET_PATH=${PUPPET_PATH:-/etc/puppet}
+USERS_PATH=${NODES_PATH:-$PUPPET_PATH/manifests/users}
 
 # Main
 # ====
+user_path=$USERS_PATH/$USER.pp
+
 pushd . >/dev/null
-cd $MODULES_PATH
-	for module in $MODULES ; do
-		module_name=$(basename $module)
-		echo "Module '$module_name':"
+cd $PUPPET_PATH
+	# Show what's new and record if something changed
+	darcs whatsnew $user_path && darcs record $user_path
 
-		cd $module
-	        darcs record --look-for-adds
+	# Open editor
+	editor $user_path
 
-	        echo
-	        cd ..
-        done
+	# Record changes
+	darcs record $user_path
 popd >/dev/null

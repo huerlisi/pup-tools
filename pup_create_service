@@ -1,0 +1,66 @@
+#!/bin/bash
+
+#  Copyright 2007 Simon Hürlimann <simon.huerlimann@cyt.ch>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+
+# Options
+# =======
+# Read config file
+CONFIG_FILE=${CONFIG_FILE:-/etc/puppet/pup.conf}
+if [ -e /etc/puppet/pup.conf ] ; then
+	source /etc/puppet/pup.conf
+fi
+
+# Command line options
+if [ $# -lt 1 ] ; then
+	echo "Usage: $0 <modulename>" >&2
+	exit 1
+fi
+
+MODULE=$1
+SERVER_PACKAGE=${2:$MODULE}
+CLIENT_PACKAGE=${3:$SERVER_PACKAGE}
+
+# Deduce default options
+MODULES_PATH=${MODULES_PATH:-/etc/puppet/modules}
+
+# Methods
+# =======
+function create_daemon() {
+	# Imports
+	echo 'import "client"' >> manifests/init.pp
+	echo 'import "server"' >> manifests/init.pp
+	
+	# Daemon class
+	echo 'import "package"' >> manifests/daemon.pp
+        echo "class ${MODULE}_daemon inherits ${MODULE}_package {" >> manifests/daemon.pp
+        echo "    service { \"${MODULE}\": ensure => running }" >> manifests/daemon.pp
+        echo "}" >> manifests/daemon.pp
+
+        # Client class
+	echo 'import "daemon"' >> manifests/client.pp
+        echo >> manifests/client.pp
+        echo "class ${MODULE}_client inherits ${MODULE}_daemon {}" >> manifests/client.pp
+
+	# Server class
+	echo 'import "daemon"' >> manifests/server.pp
+	echo >> manifests/server.pp
+	echo "class ${MODULE}_server inherits ${MODULE}_daemon {}" >> manifests/server.pp
+}
+export -f create_daemon
+
+# Main
+# ====
+pup_create_package $MODULE
+
+CREATE_HOOK=create_daemon pup_create_module $MODULE
